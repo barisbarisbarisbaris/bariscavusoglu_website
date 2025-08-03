@@ -38,13 +38,15 @@
     position: absolute; 
     font-size: 18px;
     color: rgb(0, 0, 0);
+    border-color: rgb(0, 0, 0) !important;
     border:double;
-    border-radius: 0px;
+    border-radius: 8px;
     font-family: 'Times New Roman', serif;
     z-index:1;
   }
   .bariscavusoglu:hover{
     background-color: rgb(255, 0, 255);
+    border-color: rgb(0, 0, 0) !important;
   }
   
   .page1 {
@@ -155,6 +157,13 @@
     top : 0;
     left : 0;
     width : 100%;
+  }
+
+  .imgcenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10%;
   }
 
   .img2 {
