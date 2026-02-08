@@ -747,3 +747,25 @@ body{
   display: inline-block;
   transition: font-family 0.2s ease;
 }
+
+
+/* Safari-only LeaderLine label overlay */
+#llLabelLayer {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 999999;
+}
+
+.llLabel {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font: 12px/1.1 monospace;
+  padding: 2px 4px;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 4px;
+  color: #000;
+  white-space: nowrap;
+}
