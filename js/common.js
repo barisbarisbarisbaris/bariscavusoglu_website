@@ -1,17 +1,24 @@
-//for copyright
+// for copyright (safe DOM write)
+(function () {
+  const today = new Date();
+  let dd = today.getDate();
+  let mm = today.getMonth() + 1;
+  const yyyy = today.getFullYear();
 
-const today = new Date();
+  if (dd < 10) dd = '0' + dd;
+  if (mm < 10) mm = '0' + mm;
 
-  var dd = today.getDate();
-  var mm = today.getMonth()+1; 
-  var yyyy = today.getFullYear();
-  if(dd<10) {
-    dd='0'+dd;
-  } 
-  if(mm<10) {
-    mm='0'+mm;
-  } 
-  
-  var now = dd+''+mm+''+yyyy;
-  var copyrightText ="⚔️ © bariscavusoglu "+ now;
-  document.getElementById("copyright").innerHTML = copyrightText;
+  const now = dd + '' + mm + '' + yyyy;
+  const copyrightText = '⚔️  © bariscavusoglu ' + now;
+
+  function setCopyright() {
+    const el = document.getElementById('copyright');
+    if (el) el.innerHTML = copyrightText;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setCopyright);
+  } else {
+    setCopyright();
+  }
+})();

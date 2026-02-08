@@ -10,471 +10,458 @@
 
 
 //button color change
-$("#color").on("click", function() {
-  $("#bio").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
+$("#color").on("click", function () {
+  const ids = [
+    "#bio", "#randomise", "#contact", "#press",
+    "#p-08", "#p-07", "#p-06", "#p-05", "#p-04", "#p-03", "#p-02", "#p-01",
+    "#e-01", "#e-02", "#e-03", "#e-04", "#e-05", "#randomLoc", "#randomNoise", "#reset_randomise"
+  ];
 
-  $("#randomise").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
+  const randomHex = () => "#" + Math.floor(Math.random() * 16777215).toString(16);
 
-
-  $("#contact").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#press").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-08").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-07").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-
-  $("#p-06").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-05").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-04").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-03").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-02").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#p-01").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#e-01").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#e-02").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#e-03").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#e-04").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#e-05").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#randomLoc").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#randomNoise").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
-  $("#reset_randomise").animate().css({
-    backgroundColor: '#'+Math.floor(Math.random()*16777215).toString(16)
-  }, 2500);
-
+  ids.forEach((selector) => {
+    $(selector).animate().css({ backgroundColor: randomHex() }, 2500);
+  });
 });
 
-//reload on load for leader line problem on Safari browser
+
+// reload on load for LeaderLine problem on Safari
 (function () {
-	window.onpageshow = function(event) {
-		if (event.persisted) {
-			window.location.reload();
-		}
-	};
+  window.onpageshow = function (event) {
+    if (event.persisted) window.location.reload();
+  };
 })();
 
 //elements
-var element_baris = document.getElementById('baris-cavusoglu'),
-element_e01 = document.getElementById('e-01'),   
-element_e02 = document.getElementById('e-02'),   
-element_e03 = document.getElementById('e-03'),   
-element_e04 = document.getElementById('e-04'),
-element_e05 = document.getElementById('e-05'),
-element_e06 = document.getElementById('e-06'),
+// Cache endpoints for LeaderLine
+var element_baris, element_e01, element_e02, element_e03, element_e04, element_e05, element_e06,
+    element_p01, element_p02, element_p03, element_p04, element_p05, element_p06, element_p07, element_p08,
+    element_bio, element_contact, element_press,
+    element_randomise, element_reset_randomise, element_color,
+    element_randomLoc, element_randomNoise;
 
-element_p01 = document.getElementById('p-01'),          
-element_p02 = document.getElementById('p-02'),
-element_p03 = document.getElementById('p-03');
-element_p04 = document.getElementById('p-04'),
-element_p05 = document.getElementById('p-05'),
-element_p06 = document.getElementById('p-06'),
-element_p07 = document.getElementById('p-07'),
-element_p08 = document.getElementById('p-08'),
+function cacheElements() {
+  const ids = [
+    'baris-cavusoglu', 'e-01', 'e-02', 'e-03', 'e-04', 'e-05', 'e-06',
+    'p-01', 'p-02', 'p-03', 'p-04', 'p-05', 'p-06', 'p-07', 'p-08',
+    'bio', 'contact', 'press',
+    'randomise', 'reset_randomise', 'color', 'randomLoc', 'randomNoise'
+  ];
 
-element_bio = document.getElementById('bio'),
-element_contact = document.getElementById('contact'),
-element_press = document.getElementById('press'),
-
-element_randomise = document.getElementById('randomise'),
-element_reset_randomise = document.getElementById('reset_randomise'),
-element_color = document.getElementById('color');
-
-element_randomLoc = document.getElementById('randomLoc');
-
-element_randomNoise = document.getElementById('randomNoise');
-
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    switch (id) {
+      case 'baris-cavusoglu': element_baris = el; break;
+      case 'e-01': element_e01 = el; break;
+      case 'e-02': element_e02 = el; break;
+      case 'e-03': element_e03 = el; break;
+      case 'e-04': element_e04 = el; break;
+      case 'e-05': element_e05 = el; break;
+      case 'e-06': element_e06 = el; break;
+      case 'p-01': element_p01 = el; break;
+      case 'p-02': element_p02 = el; break;
+      case 'p-03': element_p03 = el; break;
+      case 'p-04': element_p04 = el; break;
+      case 'p-05': element_p05 = el; break;
+      case 'p-06': element_p06 = el; break;
+      case 'p-07': element_p07 = el; break;
+      case 'p-08': element_p08 = el; break;
+      case 'bio': element_bio = el; break;
+      case 'contact': element_contact = el; break;
+      case 'press': element_press = el; break;
+      case 'randomise': element_randomise = el; break;
+      case 'reset_randomise': element_reset_randomise = el; break;
+      case 'color': element_color = el; break;
+      case 'randomLoc': element_randomLoc = el; break;
+      case 'randomNoise': element_randomNoise = el; break;
+    }
+  });
+}
 
 function updateDateTime() {
-  // create a new `Date` object
-const today = new Date();
-
-  var dd = today.getDate();
-  var mm = today.getMonth()+1; 
-  var yyyy = today.getFullYear();
-  if(dd<10) {
-    dd='0'+dd;
-  } 
-  if(mm<10) {
-    mm='0'+mm;
-  } 
-  // get the current date and time as a string
-  var now = dd+''+mm+''+yyyy;
+  const now = new Date();
   const currentDateTime = now.toLocaleString();
-
-  // update the `textContent` property of the `span` element with the `id` of `datetime`
-  document.querySelector('#date').textContent = currentDateTime;
+  const __dateEl = document.querySelector('#date');
+  if (__dateEl) __dateEl.textContent = currentDateTime;
 }
 setInterval(updateDateTime, 1000);
-debugger;
-console.log("");
 
-var line1 = new LeaderLine(element_baris, element_p04, {
+cacheElements();
+
+
+// --- LeaderLine safe init (prevents one bad endpoint from killing the whole script) ---
+function __noopLine() { return {position:function(){}, show:function(){}, hide:function(){}, remove:function(){}, setOptions:function(){} }; }
+
+var line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,line11,line12,line13,line14,line15,line16,line17,line18,line19,line20,line21,line22,line23,line24,line25,line26,line27; // keep these in global scope for anim-event.min.js etc
+
+function __safeNewLine(name, createFn) {
+  try {
+    var l = createFn();
+    return l || __noopLine();
+  } catch (e) {
+    console.warn('[LeaderLine] failed to create', name, e);
+    return __noopLine();
+  }
+}
+
+
+// --- Safari guard for LeaderLine captionLabel (WebKit can throw non-finite during SVG text measurement) ---
+var __LL_IS_SAFARI = (function () {
+  try {
+    var ua = navigator.userAgent || '';
+    return /^((?!chrome|android|crios|fxios|edgios).)*safari/i.test(ua);
+  } catch (e) { return false; }
+})();
+
+var __llCaption = function (text) {
+  try {
+    if (__LL_IS_SAFARI) return null; // disable labels on Safari to avoid "provided value is non-finite"
+    return LeaderLine.captionLabel(String(text), { fontSize: '14px' });
+  } catch (e) {
+    return null;
+  }
+};
+try { window.__llCaption = __llCaption; } catch (e) {}
+
+function __initLeaderLines() {
+  
+  cacheElements();
+if (!window.LeaderLine) {
+    console.warn('[LeaderLine] library not loaded');
+    return;
+  }
+
+line1 = __safeNewLine('line1', function(){ return new LeaderLine(element_baris, element_p04, {
 size:2,
 startPlug: 'square',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 1', {fontSize: 14}),
+middleLabel: __llCaption('line 1'),
 color: 'black',
-});
-
-var line2 = new LeaderLine(element_p04, element_p01, {
+}); });
+line2 = __safeNewLine('line2', function(){ return new LeaderLine(element_p04, element_p01, {
 size:2,
 startPlug: 'hand',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 2', {fontSize: 14}),
+middleLabel: __llCaption('line 2'),
 color: 'black'
-});
-
-var line3 = new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 50, y:35}), element_p01, {
+}); });
+line3 = __safeNewLine('line3', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 50, y:35}), element_p01, {
 size:2,
 startPlug: 'square',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 3', {fontSize: 14}),
+middleLabel: __llCaption('line 3'),
 color: 'black'
-});
-line3.setOptions({startSocket: 'bottom', endSocket: 'left'});
-line3.path = 'grid';
+}); });
+if (line3) line3.setOptions({startSocket: 'bottom', endSocket: 'left'});
+if (line3) line3.path = 'grid';
 
-var line4 = new LeaderLine(element_p01, element_p02, {
+line4 = __safeNewLine('line4', function(){ return new LeaderLine(element_p01, element_p02, {
 size:2,
 startPlug: 'hand',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 4', {fontSize: 14}),
+middleLabel: __llCaption('line 4'),
 color: 'black'
-});
-line4.path = 'grid';
+}); });
+if (line4) line4.path = 'grid';
 
-var line5 = new LeaderLine(element_baris, element_bio, {
+line5 = __safeNewLine('line5', function(){ return new LeaderLine(element_baris, element_bio, {
 size:2,
 startPlug: 'square',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 5', {fontSize: 14}),
+middleLabel: __llCaption('line 5'),
 color: 'black'
-});
-line5.setOptions({startSocket: 'right', endSocket: 'top'});
-line5.path = 'grid';
+}); });
+if (line5) line5.setOptions({startSocket: 'right', endSocket: 'top'});
+if (line5) line5.path = 'grid';
 
-var line6 = new LeaderLine(element_p02, element_p03, {
+line6 = __safeNewLine('line6', function(){ return new LeaderLine(element_p02, element_p03, {
 size:2,
 startPlug: 'arrow2',
 endPlug: 'arrow2',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 6', {fontSize: 14}),
+middleLabel: __llCaption('line 6'),
 color: 'black'
-});
-line6.setOptions({startSocket: 'top', endSocket: 'bottom'});
+}); });
+if (line6) line6.setOptions({startSocket: 'top', endSocket: 'bottom'});
 
-var line7 = new LeaderLine(element_p03, element_p05, {
+line7 = __safeNewLine('line7', function(){ return new LeaderLine(element_p03, element_p05, {
 size:2,
 startPlug: 'hand',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 7', {fontSize: 14}),
+middleLabel: __llCaption('line 7'),
 color: 'black'
-});
-line7.setOptions({startSocket: 'top', endSocket: 'top'});
-line7.path = 'grid';
+}); });
+if (line7) line7.setOptions({startSocket: 'top', endSocket: 'top'});
+if (line7) line7.path = 'grid';
 
-var line8 = new LeaderLine(element_p04, element_p06, {
+line8 = __safeNewLine('line8', function(){ return new LeaderLine(element_p04, element_p06, {
 dash: {animation: true},
 /*dash:true,*/
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 8', {fontSize: 14}),
+middleLabel: __llCaption('line 8'),
 color: 'black'
-});
-line8.setOptions({startSocket: 'right', endSocket: 'bottom'});
-line8.path = 'grid';
+}); });
+if (line8) line8.setOptions({startSocket: 'right', endSocket: 'bottom'});
+if (line8) line8.path = 'grid';
 
-var line9 = new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 30, y:35}), element_e01, {
+line9 = __safeNewLine('line9', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 30, y:35}), element_e01, {
 dash:true,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 9', {fontSize: 14}),
+middleLabel: __llCaption('line 9'),
 color: 'black'
-});
-line9.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
-line9.path = 'grid';
+}); });
+if (line9) line9.setOptions({startSocket: 'bottom', endSocket: 'bottom'});
+if (line9) line9.path = 'grid';
 
-var line10 = new LeaderLine(element_baris, element_e02, {
+line10 = __safeNewLine('line10', function(){ return new LeaderLine(element_baris, element_e02, {
 dash:true,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 10', {fontSize: 14}),
+middleLabel: __llCaption('line 10'),
 color: 'black'
-});
-
-var line11 = new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 70, y:35}), element_e05, {
+}); });
+line11 = __safeNewLine('line11', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 70, y:35}), element_e05, {
 dash:true,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 11', {fontSize: 14}),
+middleLabel: __llCaption('line 11'),
 color: 'black'
-});
-line11.setOptions({startSocket: 'bottom', endSocket: 'left'});
-line11.path = 'grid';
+}); });
+if (line11) line11.setOptions({startSocket: 'bottom', endSocket: 'left'});
+if (line11) line11.path = 'grid';
 
-var line12 = new LeaderLine(element_e05, element_contact, {
+line12 = __safeNewLine('line12', function(){ return new LeaderLine(element_e05, element_contact, {
 dash:false,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 12', {fontSize: 14}),
+middleLabel: __llCaption('line 12'),
 color: 'black'
-});
-line12.setOptions({startSocket: 'bottom', endSocket: 'top'});
+}); });
+if (line12) line12.setOptions({startSocket: 'bottom', endSocket: 'top'});
 
-var line13 = new LeaderLine(element_p05, element_p07, {
+line13 = __safeNewLine('line13', function(){ return new LeaderLine(element_p05, element_p07, {
 dash:true,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 13', {fontSize: 14}),
+middleLabel: __llCaption('line 13'),
 color: 'black'
-});
-
-var line14 = new LeaderLine(element_p07, element_p08, {
+}); });
+line14 = __safeNewLine('line14', function(){ return new LeaderLine(element_p07, element_p08, {
 dash:true,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 14', {fontSize: 14}),
+middleLabel: __llCaption('line 14'),
 color: 'black'
-});
-
-var line15 = new LeaderLine(element_p03, element_randomLoc, {
+}); });
+line15 = __safeNewLine('line15', function(){ return new LeaderLine(element_p03, element_randomLoc, {
 dash:true,
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 15', {fontSize: 14}),
+middleLabel: __llCaption('line 15'),
 color: 'black'
-});
-line15.setOptions({startSocket: 'left', endSocket: 'top'});
-line15.path = 'grid';
+}); });
+if (line15) line15.setOptions({startSocket: 'left', endSocket: 'top'});
+if (line15) line15.path = 'grid';
 
-var line16 = new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 0, y:70}), element_press, {
+line16 = __safeNewLine('line16', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 0, y:70}), element_press, {
 dash: {animation: true},
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 16', {fontSize: 14}),
+middleLabel: __llCaption('line 16'),
 color: 'black'
-});
-line16.setOptions({startSocket: 'left', endSocket: 'top'});
-line16.path = 'grid';
+}); });
+if (line16) line16.setOptions({startSocket: 'left', endSocket: 'top'});
+if (line16) line16.path = 'grid';
 
-var line17 = new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 10, y:35}), element_e03, {
+line17 = __safeNewLine('line17', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_baris, {x: 10, y:35}), element_e03, {
 dash: {animation: true},
 size:2,
 startPlug: 'square',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 17', {fontSize: 14}),
+middleLabel: __llCaption('line 17'),
 color: 'black'
-});
-line17.setOptions({startSocket: 'bottom', endSocket: 'left'});
-line17.path = 'grid';
+}); });
+if (line17) line17.setOptions({startSocket: 'bottom', endSocket: 'left'});
+if (line17) line17.path = 'grid';
 
-var line18 = new LeaderLine(element_p08, element_color, {
+line18 = __safeNewLine('line18', function(){ return new LeaderLine(element_p08, element_color, {
 size:2,
 startPlug: 'arrow2',
 endPlug: 'arrow2',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 18', {fontSize: 14}),
+middleLabel: __llCaption('line 18'),
 color: 'black'
-});
-line18.setOptions({startSocket: 'left', endSocket: 'right'});
+}); });
+if (line18) line18.setOptions({startSocket: 'left', endSocket: 'right'});
 
-var line19 = new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 75, y:0}), element_color, {
+line19 = __safeNewLine('line19', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 75, y:0}), element_color, {
 dash: {animation: true},
 size:2,
 startPlug: 'hand',
 endPlug: 'square',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 19', {fontSize: 14}),
+middleLabel: __llCaption('line 19'),
 color: 'black'
-});
-line19.setOptions({startSocket: 'top', endSocket: 'top'});
-line19.path = 'magnet';
+}); });
+if (line19) line19.setOptions({startSocket: 'top', endSocket: 'top'});
+if (line19) line19.path = 'magnet';
 
-var line20 = new LeaderLine(element_bio, element_e04, {
+line20 = __safeNewLine('line20', function(){ return new LeaderLine(element_bio, element_e04, {
 size:2,
 startPlug: 'hand',
 endPlug: 'arrow2',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 20', {fontSize: 14}),
+middleLabel: __llCaption('line 20'),
 color: 'black'
-});
-line20.setOptions({startSocket: 'right', endSocket: 'left'});
+}); });
+if (line20) line20.setOptions({startSocket: 'right', endSocket: 'left'});
 
-var line21 = new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 0, y:30}), element_e03, {
+line21 = __safeNewLine('line21', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 0, y:30}), element_e03, {
 size:2,
 startPlug: 'arrow2',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 21', {fontSize: 14}),
+middleLabel: __llCaption('line 21'),
 color: 'black'
-});
-line21.path = 'grid';
-line21.setOptions({startSocket: 'left', endSocket: 'right'});
+}); });
+if (line21) line21.path = 'grid';
+if (line21) line21.setOptions({startSocket: 'left', endSocket: 'right'});
 
-var line22 = new LeaderLine(element_e01, element_e03, {
+line22 = __safeNewLine('line22', function(){ return new LeaderLine(element_e01, element_e03, {
 size:2,
 dash: {animation: true},
 startPlug: 'square',
 endPlug: 'hand',
 /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-middleLabel: LeaderLine.captionLabel('line 22', {fontSize: 14}),
+middleLabel: __llCaption('line 22'),
 color: 'black'
-});
-line22.path = 'grid';
-line22.setOptions({startSocket: 'right', endSocket: 'top'});
+}); });
+if (line22) line22.path = 'grid';
+if (line22) line22.setOptions({startSocket: 'right', endSocket: 'top'});
 
-var line23 = new LeaderLine(element_randomise, element_reset_randomise, {
+line23 = __safeNewLine('line23', function(){ return new LeaderLine(element_randomise, element_reset_randomise, {
   size:2,
   dash:false,
   startPlug: 'square',
   endPlug: 'hand',
   /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-  middleLabel: LeaderLine.captionLabel('line 23', {fontSize: 14}),
+  middleLabel: __llCaption('line 23'),
   color: 'black'
-  });
-  line23.path = 'grid';
+  }); });
+if (line23) line23.path = 'grid';
   line23.setOptions({startSocket: 'left', endSocket: 'left'});
 
-  var line24 = new LeaderLine(element_color, element_reset_randomise, {
+  line24 = __safeNewLine('line24', function(){ return new LeaderLine(element_color, element_reset_randomise, {
     dash: {animation: true},
     size:2,
     startPlug: 'square',
     endPlug: 'hand',
     /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-    middleLabel: LeaderLine.captionLabel('line 24', {fontSize: 14}),
+    middleLabel: __llCaption('line 24'),
     color: 'black'
-    });
-    line24.path = 'grid';
+    }); });
+if (line24) line24.path = 'grid';
     line24.setOptions({startSocket: 'top', endSocket: 'right'});
 
-  var line25 = new LeaderLine(element_randomNoise, element_reset_randomise, {
+  line25 = __safeNewLine('line25', function(){ return new LeaderLine(element_randomNoise, element_reset_randomise, {
     dash: {animation: true},
     size:2,
     startPlug: 'square',
     endPlug: 'hand',
     /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-    middleLabel: LeaderLine.captionLabel('line 25', {fontSize: 14}),
+    middleLabel: __llCaption('line 25'),
     color: 'black'
-    });
-    line25.path = 'magnet';
+    }); });
+if (line25) line25.path = 'magnet';
 
-  var line26 = new LeaderLine(element_e03, element_e06, {
+  line26 = __safeNewLine('line26', function(){ return new LeaderLine(element_e03, element_e06, {
     dash: {animation: true},
     size:2,
     startPlug: 'square',
     endPlug: 'hand',
     /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-    middleLabel: LeaderLine.captionLabel('line 26', {fontSize: 14}),
+    middleLabel: __llCaption('line 26'),
     color: 'black'
-    });
-    line26.path = 'grid';
+    }); });
+if (line26) line26.path = 'grid';
     line26.setOptions({startSocket: 'bottom', endSocket: 'left'});
 
-  var line27 = new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 0, y:60}), element_e06, {
+  line27 = __safeNewLine('line27', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_bio, {x: 0, y:60}), element_e06, {
     dash: {animation: true},
     size:2,
     startPlug: 'square',
     endPlug: 'hand',
     /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
-    middleLabel: LeaderLine.captionLabel('line 27', {fontSize: 14}),
+    middleLabel: __llCaption('line 27'),
     color: 'black'
-    });
-    line27.path = 'grid';
+    }); });
+if (line27) line27.path = 'grid';
     line27.setOptions({startSocket: 'left', endSocket: 'right'});
     
+}
 
-/* P 05 */
-var listen_p5 = document.getElementById('p-05');
+window.addEventListener('load', function () { setTimeout(__initLeaderLines, 50); });
 
-listen_p5.addEventListener('mouseover', AnimEvent.add(function() {
-line7.position();
-}), false);
-listen_p5.addEventListener('mouseout', AnimEvent.add(function() {
-line7.position();
-}), false);
 
-listen_p5.addEventListener('mouseover', AnimEvent.add(function() {
-  line13.position();
-  }), false);
-  listen_p5.addEventListener('mouseout', AnimEvent.add(function() {
-  line13.position();
-  }), false);
+// Consolidate many repetitive hover listeners using a data-driven approach
+function safePosition(line) { try { line && line.position && line.position(); } catch (e) {} }
+
+function addHoverHandlers(id, lines) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const fn = AnimEvent && AnimEvent.add ? AnimEvent.add(function () { lines.forEach(safePosition); }) : function () { lines.forEach(safePosition); };
+  el.addEventListener('mouseover', fn, false);
+  el.addEventListener('mouseout', fn, false);
+}
+
+// mapping of element id => lines to reposition on hover
+const hoverBindings = {
+  'p-05': [line7, line13],
+  'p-03': [line15, line7, line6],
+  'p-06': [line8],
+  'p-07': [line13, line14],
+  'p-08': [line18, line14],
+  'p-04': [line1, line2, line8],
+  'p-02': [line4, line6],
+  'p-01': [line3, line4, line2],
+  'e-01': [line9, line22],
+  'e-02': [line10],
+  'e-03': [line17, line21, line22, line26],
+  'e-04': [line20],
+  'e-05': [line11, line12],
+  'e-06': [line26, line27],
+  'contact': [line12],
+  'press': [line16]
+};
+
+Object.keys(hoverBindings).forEach(id => addHoverHandlers(id, hoverBindings[id] || []));
 
 
 /* P 03 */
@@ -752,248 +739,53 @@ line16.position();
 
 // RANDOM BUTTON POSITION START
 
-// e01 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_e01.offsetWidth;
-  const maxY = window.innerHeight - element_e01.offsetHeight;
-
-  const posX = Math.floor(Math.random() * maxX);
-  const posY = Math.floor(Math.random() * maxY);
-
-  element_e01.style.left = `${posX}px`;
-  element_e01.style.top = `${posY}px`;
-
-  line9.position();
-  line22.position();
-});
-
-// e02 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_e02.offsetWidth;
-  const maxY = window.innerHeight - element_e02.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_e02.style.left = `${posX}px`;
-  element_e02.style.top = `${posY}px`;
-
-  line10.position();
-});
-
-// e03 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_e03.offsetWidth;
-  const maxY = window.innerHeight - element_e03.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_e03.style.left = `${posX}px`;
-  element_e03.style.top = `${posY}px`;
-
-  line17.position();
-  line22.position();
-  line21.position();
-  line26.position();
-});
-
-// e04 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_e04.offsetWidth;
-  const maxY = window.innerHeight - element_e04.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_e04.style.left = `${posX}px`;
-  element_e04.style.top = `${posY}px`;
-
-  line20.position();
-});
-
-// e05 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_e05.offsetWidth;
-  const maxY = window.innerHeight - element_e05.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_e05.style.left = `${posX}px`;
-  element_e05.style.top = `${posY}px`;
-
-  line11.position();
-  line12.position();
-});
-
-// e06 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_e06.offsetWidth;
-  const maxY = window.innerHeight - element_e06.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_e06.style.left = `${posX}px`;
-  element_e06.style.top = `${posY}px`;
-
-  line26.position();
-  line27.position();
-});
-
-// p01 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p01.offsetWidth;
-  const maxY = window.innerHeight - element_p01.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p01.style.left = `${posX}px`;
-  element_p01.style.top = `${posY}px`;
-
-  line2.position();
-  line3.position();  
-  line4.position();
-});
-
-// p02 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p02.offsetWidth;
-  const maxY = window.innerHeight - element_p02.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p02.style.left = `${posX}px`;
-  element_p02.style.top = `${posY}px`;
-
-  line4.position();
-  line6.position();
-});
-
-// p03 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p03.offsetWidth;
-  const maxY = window.innerHeight - element_p03.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p03.style.left = `${posX}px`;
-  element_p03.style.top = `${posY}px`;
-
-  line15.position();
-  line6.position();  
-  line7.position();
-});
-
-// p04 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p04.offsetWidth;
-  const maxY = window.innerHeight - element_p04.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p04.style.left = `${posX}px`;
-  element_p04.style.top = `${posY}px`;
-
-  line1.position();
-  line2.position();  
-  line8.position();
-});
-
-// p05 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p05.offsetWidth;
-  const maxY = window.innerHeight - element_p05.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p05.style.left = `${posX}px`;
-  element_p05.style.top = `${posY}px`;
-
-  line7.position();
-  line13.position();  
-});
-
-// p06 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p06.offsetWidth;
-  const maxY = window.innerHeight - element_p06.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p06.style.left = `${posX}px`;
-  element_p06.style.top = `${posY}px`;
-
-  line8.position();
-});
-
-// p07 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p07.offsetWidth;
-  const maxY = window.innerHeight - element_p07.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p07.style.left = `${posX}px`;
-  element_p07.style.top = `${posY}px`;
-
-  line13.position();
-  line14.position();  
-});
-
-// p08 RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_p08.offsetWidth;
-  const maxY = window.innerHeight - element_p08.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_p08.style.left = `${posX}px`;
-  element_p08.style.top = `${posY}px`;
-
-  line14.position();
-  line18.position();  
-});
-
-// press RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_press.offsetWidth;
-  const maxY = window.innerHeight - element_press.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_press.style.left = `${posX}px`;
-  element_press.style.top = `${posY}px`;
-
-  line16.position(); 
-});
-
-// contact RAND POSITION
-element_randomLoc.addEventListener('click', () => {
-  const maxX = window.innerWidth - element_contact.offsetWidth;
-  const maxY = window.innerHeight - element_contact.offsetHeight;
-
-  posX = Math.floor(Math.random() * maxX);
-  posY = Math.floor(Math.random() * maxY);
-
-  element_contact.style.left = `${posX}px`;
-  element_contact.style.top = `${posY}px`;
-
-  line12.position(); 
-});
-
+// RANDOM BUTTON POSITION START
+(function bindRandomPosition() {
+  // Data-driven replacement for many repeated click listeners.
+  const items = [
+    { el: () => element_e01, lineNames: ['line9', 'line22'] },
+    { el: () => element_e02, lineNames: ['line10'] },
+    { el: () => element_e03, lineNames: ['line17', 'line22', 'line21', 'line26'] },
+    { el: () => element_e04, lineNames: ['line20'] },
+    { el: () => element_e05, lineNames: ['line11', 'line12'] },
+    { el: () => element_e06, lineNames: ['line26', 'line27'] },
+
+    { el: () => element_p01, lineNames: ['line2', 'line3', 'line4'] },
+    { el: () => element_p02, lineNames: ['line4', 'line6'] },
+    { el: () => element_p03, lineNames: ['line15', 'line6', 'line7'] },
+    { el: () => element_p04, lineNames: ['line1', 'line2', 'line8'] },
+    { el: () => element_p05, lineNames: ['line7', 'line13'] },
+    { el: () => element_p06, lineNames: ['line8'] },
+    { el: () => element_p07, lineNames: ['line13', 'line14'] },
+    { el: () => element_p08, lineNames: ['line14', 'line18'] },
+
+    { el: () => element_press, lineNames: ['line16'] },
+    { el: () => element_contact, lineNames: ['line12'] },
+  ];
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const repositionLine = (ln) => { try { ln && ln.position && ln.position(); } catch (_) {} };
+  element_randomLoc && element_randomLoc.addEventListener("click", () => {
+    items.forEach(({ el, lineNames }) => {
+      const element = el();
+      if (!element) return;
+
+      const maxX = window.innerWidth - element.offsetWidth;
+      const maxY = window.innerHeight - element.offsetHeight;
+
+      const x = Math.floor(Math.random() * clamp(maxX, 0, maxX));
+      const y = Math.floor(Math.random() * clamp(maxY, 0, maxY));
+
+      element.style.left = `${x}px`;
+      element.style.top = `${y}px`;
+
+      lineNames.forEach(function(n){ repositionLine(window[n]); });
+    });
+  });
+})();
 
 // RANDOM BUTTON POSITION END
+
 
 
 
@@ -1313,466 +1105,47 @@ function startNoiseMovement() {
 
 // RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START RANDOM BUTTON SCALE START
 
-/* E 06 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
+(function bindRandomScale() {
+  // Consolidated replacement for many repeated $(document).ready + #randomise click handlers.
+  const scaleItems = [
+    { selector: "#e-06", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line26', 'line27'] },
+    { selector: "#e-05", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line11', 'line12'] },
+    { selector: "#e-04", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line20'] },
+    { selector: "#e-03", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line17', 'line22', 'line21', 'line26'] },
+    { selector: "#e-02", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line10'] },
+    { selector: "#e-01", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line9', 'line22'] },
 
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#e-06").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
+    { selector: "#p-01", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line3', 'line2', 'line4'] },
+    { selector: "#p-02", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line6', 'line4'] },
+    { selector: "#p-03", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line15', 'line6', 'line7'] },
+    { selector: "#p-04", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line1', 'line2', 'line8'] },
+    { selector: "#p-05", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line7', 'line13'] },
+    { selector: "#p-06", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line8'] },
+    { selector: "#p-07", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line14', 'line13'] },
 
+    { selector: "#p-08", min: 0.5, max: 10, nx: 5, ny: 20, lineNames: ['line14', 'line18'] },
+    { selector: "#press", min: 0.5, max: 10, nx: 5, ny: 20, lineNames: ['line16'] },
+    { selector: "#contact", min: 0.5, max: 10, nx: 5, ny: 20, lineNames: ['line12'] },
+  ];
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const repositionLine = (ln) => { try { ln && ln.position && ln.position(); } catch (_) {} };
+
+  $("#randomise").on("click", function () {
+    scaleItems.forEach(({ selector, min, max, nx, ny, lineNames }) => {
+      // Match original behavior: randomScale = Math.random() * noiseFactor + 1 (clamped)
+      let randomScaleX = clamp(Math.random() * nx + 1, min, max);
+      let randomScaleY = clamp(Math.random() * ny + 1, min, max);
+
+      $(selector).css({
+        transition: "transform 0s ease",
+        transform: `scale(${randomScaleX}, ${randomScaleY})`,
+      });
+
+      lineNames.forEach(function(n){ repositionLine(window[n]); });
     });
-    line26.position();
-    line27.position();
   });
-});
+})();
 
-/* E 05 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#e-05").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line11.position();
-    line12.position();
-  });
-});
-
-/* E 04 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#e-04").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line20.position();
-  });
-});
-
-/* E 03 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#e-03").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line17.position();
-    line22.position();
-    line21.position();
-    line26.position();
-  });
-});
-
-/* E 02 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#e-02").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line10.position();
-  });
-});
-
-/* E 01 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#e-01").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line9.position();
-    line22.position();
-  });
-});
-
-/* P 01 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-01").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line3.position();
-    line2.position();
-    line4.position();
-  });
-});
-
-/* P 02 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-02").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line6.position();
-    line4.position();
-  });
-});
-
-/* P 03 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-03").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line15.position();
-    line6.position();
-    line7.position();
-  });
-});
-
-/* P 04 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 5;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-04").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line1.position();
-    line2.position();
-    line8.position();
-  });
-});
-
-/* P 05 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 5;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-05").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line7.position();
-    line13.position();
-  });
-});
-
-/* P 06 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 5;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-06").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line8.position();
-  });
-});
-
-/* P 07 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 5;   // Maximum scale (200% of original size)
-    var noiseFactor = 5; // Adjust noise factor for randomness
-    
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactor + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-07").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line14.position();
-    line13.position();
-  });
-});
-
-/* P 08 RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactorX = 5; // Adjust noise factor for randomness
-    var noiseFactorY = 20; // Adjust noise factor for randomness
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactorX + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactorY + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#p-08").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line14.position();
-    line18.position();
-  });
-});
-
-/* PRESS RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactorX = 5; // Adjust noise factor for randomness
-    var noiseFactorY = 20; // Adjust noise factor for randomness
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactorX + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactorY + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#press").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line16.position();
-  });
-});
-
-/* CONTACT RANDOMISATION */
-$(document).ready(function() {
-  $("#randomise").on("click", function() {
-    var minScale = 0.5; // Minimum scale (50% of original size)
-    var maxScale = 10;   // Maximum scale (200% of original size)
-    var noiseFactorX = 5; // Adjust noise factor for randomness
-    var noiseFactorY = 20; // Adjust noise factor for randomness
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleX = Math.random() * noiseFactorX + 1; // Random scale between 1 and 1.5
-    randomScaleX = Math.min(Math.max(randomScaleX, minScale), maxScale);
-
-    // Generate a random scale factor within the defined limits X
-    var randomScaleY = Math.random() * noiseFactorY + 1; // Random scale between 1 and 1.5
-    randomScaleY = Math.min(Math.max(randomScaleY, minScale), maxScale);
-    
-    // Apply the scale transformation with animation
-    $("#contact").css({
-      transition: 'transform 0s ease',
-      transform: 'scale(' + randomScaleX + ', ' + randomScaleY + ')'
-
-    });
-    line12.position();
-  });
-});
-
-// RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END
-
-
-
-
-
-//RANDOM CHARACTER CHANGE ON HOVER
-const button = document.getElementById('randomFontButton');
-const fonts = ["Arial", "Verdana", "Courier New", "Georgia", "Times New Roman", "Comic Sans MS", "Impact", "Lucida Console", "Tahoma", "Trebuchet MS"];
-
-button.innerHTML = button.textContent.split('').map(letter => `<span>${letter}</span>`).join('');
-
-let intervals = [];
-
-button.addEventListener('mouseover', () => {
-    const letters = button.querySelectorAll('span');
-    
-    letters.forEach(letter => {
-        const intervalId = setInterval(() => {
-            const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
-            letter.style.fontFamily = randomFont;
-        }, 100); // Change the speed by adjusting the interval time (in milliseconds)
-
-        intervals.push(intervalId);
-    });
-});
-
-button.addEventListener('mouseout', () => {
-    // Clear all intervals
-    intervals.forEach(intervalId => clearInterval(intervalId));
-    intervals = []; // Clear the array after stopping the intervals
-
-    // Reset the font of each letter to the default font
-    const letters = button.querySelectorAll('span');
-    letters.forEach(letter => {
-        letter.style.fontFamily = ""; // Resets to the inherited or default font
-    });
-});
-
-
-
-
-
-
+// RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END
+ 
