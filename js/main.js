@@ -105,7 +105,9 @@ function __safeNewLine(name, createFn) {
 }
 
 
-// --- Safari guard for LeaderLine captionLabel (WebKit can throw non-finite during SVG text measurement) ---
+// --- Safari handling for LeaderLine labels ---
+// Safari/WebKit sometimes throws "The provided value is non-finite" when LeaderLine tries to measure SVG text.
+// We disable native middleLabel captions on Safari and render HTML labels anchored to the line's SVG path instead.
 var __LL_IS_SAFARI = (function () {
   try {
     var ua = navigator.userAgent || '';
@@ -113,20 +115,176 @@ var __LL_IS_SAFARI = (function () {
   } catch (e) { return false; }
 })();
 
-var __llCaption = function (text) {
+function __llCaption(text) {
   try {
-    if (__LL_IS_SAFARI) return null; // disable labels on Safari to avoid "provided value is non-finite"
+    if (__LL_IS_SAFARI) return null;
     return LeaderLine.captionLabel(String(text), { fontSize: '14px' });
-  } catch (e) {
-    return null;
+  } catch (e) { return null; }
+}
+
+// --- HTML label layer (Safari only) ---
+var __LL_LABEL_LAYER_ID = 'll-label-layer';
+var __LL_LABEL_STYLE_ID = 'll-label-style';
+var __LL_LABELS = []; // { line, el, text }
+
+function __llEnsureLabelLayer() {
+  var layer = document.getElementById(__LL_LABEL_LAYER_ID);
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.id = __LL_LABEL_LAYER_ID;
+    layer.style.position = 'fixed';
+    layer.style.left = '0';
+    layer.style.top = '0';
+    layer.style.width = '100vw';
+    layer.style.height = '100vh';
+    layer.style.pointerEvents = 'none';
+    layer.style.zIndex = '2147483647';
+    document.body.appendChild(layer);
   }
-};
-try { window.__llCaption = __llCaption; } catch (e) {}
+
+  if (!document.getElementById(__LL_LABEL_STYLE_ID)) {
+    var st = document.createElement('style');
+    st.id = __LL_LABEL_STYLE_ID;
+    st.textContent =
+      '#'+__LL_LABEL_LAYER_ID+' .ll-line-label{' +
+      'position:fixed;' +
+      'left:0;top:0;' +
+      'transform:translate(-50%,-50%);' +
+      'font-size:14px;' +
+      'line-height:1;' +
+      'color:#000;' +
+      'background:rgba(255,255,255,0.0);' +
+      'padding:0;' +
+      'margin:0;' +
+      'white-space:nowrap;' +
+      'user-select:none;' +
+      'pointer-events:none;' +
+      '}' +
+      '#'+__LL_LABEL_LAYER_ID+'{mix-blend-mode:normal;}';
+    document.head.appendChild(st);
+  }
+  return layer;
+}
+
+function __llPathForLine(line) {
+  try {
+    if (!line || !line._id) return null;
+    // LeaderLine uses APP_ID "leader-line" and creates path id: leader-line-<id>-line-path
+    return document.getElementById('leader-line-' + line._id + '-line-path');
+  } catch (e) { return null; }
+}
+
+
+function __llMidpointScreenXY(line) {
+  var path = __llPathForLine(line);
+  if (!path) return null;
+
+  try {
+    // Prefer true midpoint along the SVG path (works for L / S routed lines)
+    if (path.getTotalLength && path.getPointAtLength) {
+      var len = path.getTotalLength();
+      if (isFinite(len) && len > 0) {
+        var p = path.getPointAtLength(len * 0.5);
+
+        // Convert SVG coords -> screen coords (robust under zoom)
+        var svg = path.ownerSVGElement;
+        if (svg && svg.createSVGPoint) {
+          var pt = svg.createSVGPoint();
+          pt.x = p.x; pt.y = p.y;
+
+          var ctm = path.getScreenCTM ? path.getScreenCTM() : (svg.getScreenCTM ? svg.getScreenCTM() : null);
+          if (ctm) {
+            var sp = pt.matrixTransform(ctm);
+            if (sp && isFinite(sp.x) && isFinite(sp.y)) {
+              return { x: sp.x, y: sp.y };
+            }
+          }
+        }
+      }
+    }
+
+    // Fallback: screen-space bounding box center
+    if (path.getBoundingClientRect) {
+      var r = path.getBoundingClientRect();
+      if (r && isFinite(r.left) && isFinite(r.top) && isFinite(r.width) && isFinite(r.height)) {
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      }
+    }
+
+    return null;
+  } catch (e) { return null; }
+}
+
+
+function __llRegisterSafariLabel(line, text) {
+  try {
+    if (!__LL_IS_SAFARI) return;
+    if (!line) return;
+    var layer = __llEnsureLabelLayer();
+    var el = document.createElement('div');
+    el.className = 'll-line-label';
+    el.textContent = String(text);
+    layer.appendChild(el);
+    __LL_LABELS.push({ line: line, el: el, text: String(text) });
+  } catch (e) {}
+}
+
+function __llUpdateSafariLabels() {
+  if (!__LL_IS_SAFARI) return;
+  for (var i = 0; i < __LL_LABELS.length; i++) {
+    var it = __LL_LABELS[i];
+    if (!it || !it.el) continue;
+    var xy = __llMidpointScreenXY(it.line);
+    if (!xy) {
+      it.el.style.display = 'none';
+      continue;
+    }
+    it.el.style.display = 'block';
+    it.el.style.left = xy.x + 'px';
+    it.el.style.top = xy.y + 'px';
+  }
+}
+
+function __llPatchPositionForSafari() {
+  if (!__LL_IS_SAFARI) return;
+  if (!window.LeaderLine || !LeaderLine.prototype || LeaderLine.prototype.__llSafariLabelPatched) return;
+  var orig = LeaderLine.prototype.position;
+  if (typeof orig !== 'function') return;
+  LeaderLine.prototype.position = function () {
+    var r = orig.apply(this, arguments);
+    // Update labels after line recalculates geometry
+    try { __llUpdateSafariLabels(); } catch (e) {}
+    return r;
+  };
+  LeaderLine.prototype.__llSafariLabelPatched = true;
+}
+
+
+// --- Keep LeaderLine synced with DOM transforms/position changes (randP/randS/randN/hover/zoom) ---
+function __positionAllLines() {
+  for (var i = 1; i <= 27; i++) {
+    try {
+      var ln = window['line' + i];
+      if (ln && typeof ln.position === 'function') ln.position();
+    } catch (e) {}
+  }
+  try { if (typeof __llUpdateAllLabelsNow === 'function') __llUpdateAllLabelsNow(); } catch (e) {}
+}
+
+(function __startLeaderLineAutoReposition(){
+  var last = 0;
+  function tick(ts){
+    if (!last || (ts - last) > 50) {
+      last = ts;
+      try { __positionAllLines(); } catch(e) {}
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
 
 function __initLeaderLines() {
-  
-  cacheElements();
-if (!window.LeaderLine) {
+  if (!window.LeaderLine) {
     console.warn('[LeaderLine] library not loaded');
     return;
   }
@@ -425,6 +583,49 @@ if (line26) line26.path = 'grid';
 if (line27) line27.path = 'grid';
     line27.setOptions({startSocket: 'left', endSocket: 'right'});
     
+
+// Safari: render line names as HTML labels (native LeaderLine captions are disabled on Safari)
+if (__LL_IS_SAFARI) {
+  __llPatchPositionForSafari();
+  // clear any existing labels (in case of reload)
+  __LL_LABELS = [];
+  var layer = document.getElementById(__LL_LABEL_LAYER_ID);
+  if (layer) layer.innerHTML = '';
+
+  __llRegisterSafariLabel(line1, 'line 1');
+  __llRegisterSafariLabel(line2, 'line 2');
+  __llRegisterSafariLabel(line3, 'line 3');
+  __llRegisterSafariLabel(line4, 'line 4');
+  __llRegisterSafariLabel(line5, 'line 5');
+  __llRegisterSafariLabel(line6, 'line 6');
+  __llRegisterSafariLabel(line7, 'line 7');
+  __llRegisterSafariLabel(line8, 'line 8');
+  __llRegisterSafariLabel(line9, 'line 9');
+  __llRegisterSafariLabel(line10, 'line 10');
+  __llRegisterSafariLabel(line11, 'line 11');
+  __llRegisterSafariLabel(line12, 'line 12');
+  __llRegisterSafariLabel(line13, 'line 13');
+  __llRegisterSafariLabel(line14, 'line 14');
+  __llRegisterSafariLabel(line15, 'line 15');
+  __llRegisterSafariLabel(line16, 'line 16');
+  __llRegisterSafariLabel(line17, 'line 17');
+  __llRegisterSafariLabel(line18, 'line 18');
+  __llRegisterSafariLabel(line19, 'line 19');
+  __llRegisterSafariLabel(line20, 'line 20');
+  __llRegisterSafariLabel(line21, 'line 21');
+  __llRegisterSafariLabel(line22, 'line 22');
+  __llRegisterSafariLabel(line23, 'line 23');
+  __llRegisterSafariLabel(line24, 'line 24');
+  __llRegisterSafariLabel(line25, 'line 25');
+  __llRegisterSafariLabel(line26, 'line 26');
+  __llRegisterSafariLabel(line27, 'line 27');
+
+  // initial positioning (after layout)
+  setTimeout(__llUpdateSafariLabels, 0);
+  window.addEventListener('scroll', __llUpdateSafariLabels, true);
+  window.addEventListener('resize', __llUpdateSafariLabels, true);
+}
+
 }
 
 window.addEventListener('load', function () { setTimeout(__initLeaderLines, 50); });
@@ -743,30 +944,30 @@ line16.position();
 (function bindRandomPosition() {
   // Data-driven replacement for many repeated click listeners.
   const items = [
-    { el: () => element_e01, lineNames: ['line9', 'line22'] },
-    { el: () => element_e02, lineNames: ['line10'] },
-    { el: () => element_e03, lineNames: ['line17', 'line22', 'line21', 'line26'] },
-    { el: () => element_e04, lineNames: ['line20'] },
-    { el: () => element_e05, lineNames: ['line11', 'line12'] },
-    { el: () => element_e06, lineNames: ['line26', 'line27'] },
+    { el: () => element_e01, lines: [line9, line22] },
+    { el: () => element_e02, lines: [line10] },
+    { el: () => element_e03, lines: [line17, line22, line21, line26] },
+    { el: () => element_e04, lines: [line20] },
+    { el: () => element_e05, lines: [line11, line12] },
+    { el: () => element_e06, lines: [line26, line27] },
 
-    { el: () => element_p01, lineNames: ['line2', 'line3', 'line4'] },
-    { el: () => element_p02, lineNames: ['line4', 'line6'] },
-    { el: () => element_p03, lineNames: ['line15', 'line6', 'line7'] },
-    { el: () => element_p04, lineNames: ['line1', 'line2', 'line8'] },
-    { el: () => element_p05, lineNames: ['line7', 'line13'] },
-    { el: () => element_p06, lineNames: ['line8'] },
-    { el: () => element_p07, lineNames: ['line13', 'line14'] },
-    { el: () => element_p08, lineNames: ['line14', 'line18'] },
+    { el: () => element_p01, lines: [line2, line3, line4] },
+    { el: () => element_p02, lines: [line4, line6] },
+    { el: () => element_p03, lines: [line15, line6, line7] },
+    { el: () => element_p04, lines: [line1, line2, line8] },
+    { el: () => element_p05, lines: [line7, line13] },
+    { el: () => element_p06, lines: [line8] },
+    { el: () => element_p07, lines: [line13, line14] },
+    { el: () => element_p08, lines: [line14, line18] },
 
-    { el: () => element_press, lineNames: ['line16'] },
-    { el: () => element_contact, lineNames: ['line12'] },
+    { el: () => element_press, lines: [line16] },
+    { el: () => element_contact, lines: [line12] },
   ];
 
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
   const repositionLine = (ln) => { try { ln && ln.position && ln.position(); } catch (_) {} };
   element_randomLoc && element_randomLoc.addEventListener("click", () => {
-    items.forEach(({ el, lineNames }) => {
+    items.forEach(({ el, lines }) => {
       const element = el();
       if (!element) return;
 
@@ -779,7 +980,7 @@ line16.position();
       element.style.left = `${x}px`;
       element.style.top = `${y}px`;
 
-      lineNames.forEach(function(n){ repositionLine(window[n]); });
+      lines.forEach(repositionLine);
     });
   });
 })();
@@ -1108,31 +1309,31 @@ function startNoiseMovement() {
 (function bindRandomScale() {
   // Consolidated replacement for many repeated $(document).ready + #randomise click handlers.
   const scaleItems = [
-    { selector: "#e-06", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line26', 'line27'] },
-    { selector: "#e-05", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line11', 'line12'] },
-    { selector: "#e-04", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line20'] },
-    { selector: "#e-03", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line17', 'line22', 'line21', 'line26'] },
-    { selector: "#e-02", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line10'] },
-    { selector: "#e-01", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line9', 'line22'] },
+    { selector: "#e-06", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line26, line27] },
+    { selector: "#e-05", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line11, line12] },
+    { selector: "#e-04", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line20] },
+    { selector: "#e-03", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line17, line22, line21, line26] },
+    { selector: "#e-02", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line10] },
+    { selector: "#e-01", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line9, line22] },
 
-    { selector: "#p-01", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line3', 'line2', 'line4'] },
-    { selector: "#p-02", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line6', 'line4'] },
-    { selector: "#p-03", min: 0.5, max: 10, nx: 5, ny: 5, lineNames: ['line15', 'line6', 'line7'] },
-    { selector: "#p-04", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line1', 'line2', 'line8'] },
-    { selector: "#p-05", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line7', 'line13'] },
-    { selector: "#p-06", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line8'] },
-    { selector: "#p-07", min: 0.5, max: 5,  nx: 5, ny: 5, lineNames: ['line14', 'line13'] },
+    { selector: "#p-01", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line3, line2, line4] },
+    { selector: "#p-02", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line6, line4] },
+    { selector: "#p-03", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line15, line6, line7] },
+    { selector: "#p-04", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line1, line2, line8] },
+    { selector: "#p-05", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line7, line13] },
+    { selector: "#p-06", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line8] },
+    { selector: "#p-07", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line14, line13] },
 
-    { selector: "#p-08", min: 0.5, max: 10, nx: 5, ny: 20, lineNames: ['line14', 'line18'] },
-    { selector: "#press", min: 0.5, max: 10, nx: 5, ny: 20, lineNames: ['line16'] },
-    { selector: "#contact", min: 0.5, max: 10, nx: 5, ny: 20, lineNames: ['line12'] },
+    { selector: "#p-08", min: 0.5, max: 10, nx: 5, ny: 20, lines: [line14, line18] },
+    { selector: "#press", min: 0.5, max: 10, nx: 5, ny: 20, lines: [line16] },
+    { selector: "#contact", min: 0.5, max: 10, nx: 5, ny: 20, lines: [line12] },
   ];
 
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
   const repositionLine = (ln) => { try { ln && ln.position && ln.position(); } catch (_) {} };
 
   $("#randomise").on("click", function () {
-    scaleItems.forEach(({ selector, min, max, nx, ny, lineNames }) => {
+    scaleItems.forEach(({ selector, min, max, nx, ny, lines }) => {
       // Match original behavior: randomScale = Math.random() * noiseFactor + 1 (clamped)
       let randomScaleX = clamp(Math.random() * nx + 1, min, max);
       let randomScaleY = clamp(Math.random() * ny + 1, min, max);
@@ -1142,7 +1343,7 @@ function startNoiseMovement() {
         transform: `scale(${randomScaleX}, ${randomScaleY})`,
       });
 
-      lineNames.forEach(function(n){ repositionLine(window[n]); });
+      lines.forEach(repositionLine);
     });
   });
 })();
