@@ -14,7 +14,7 @@ $("#color").on("click", function () {
   const ids = [
     "#bio", "#randomise", "#contact", "#press",
     "#p-08", "#p-07", "#p-06", "#p-05", "#p-04", "#p-03", "#p-02", "#p-01",
-    "#e-01", "#e-02", "#e-03", "#e-04", "#e-05", "#randomLoc", "#randomNoise", "#reset_randomise"
+    "#e-01", "#e-02", "#e-03", "#e-04", "#e-05", "#e-07", "#randomLoc", "#randomNoise", "#reset_randomise"
   ];
 
   const randomHex = () => "#" + Math.floor(Math.random() * 16777215).toString(16);
@@ -34,7 +34,7 @@ $("#color").on("click", function () {
 
 //elements
 // Cache endpoints for LeaderLine
-var element_baris, element_e01, element_e02, element_e03, element_e04, element_e05, element_e06,
+var element_baris, element_e01, element_e02, element_e03, element_e04, element_e05, element_e06, element_e07,
     element_p01, element_p02, element_p03, element_p04, element_p05, element_p06, element_p07, element_p08,
     element_bio, element_contact, element_press,
     element_randomise, element_reset_randomise, element_color,
@@ -42,7 +42,7 @@ var element_baris, element_e01, element_e02, element_e03, element_e04, element_e
 
 function cacheElements() {
   const ids = [
-    'baris-cavusoglu', 'e-01', 'e-02', 'e-03', 'e-04', 'e-05', 'e-06',
+    'baris-cavusoglu', 'e-01', 'e-02', 'e-03', 'e-04', 'e-05', 'e-06', 'e-07',
     'p-01', 'p-02', 'p-03', 'p-04', 'p-05', 'p-06', 'p-07', 'p-08',
     'bio', 'contact', 'press',
     'randomise', 'reset_randomise', 'color', 'randomLoc', 'randomNoise'
@@ -58,6 +58,7 @@ function cacheElements() {
       case 'e-04': element_e04 = el; break;
       case 'e-05': element_e05 = el; break;
       case 'e-06': element_e06 = el; break;
+      case 'e-07': element_e07 = el; break;
       case 'p-01': element_p01 = el; break;
       case 'p-02': element_p02 = el; break;
       case 'p-03': element_p03 = el; break;
@@ -92,7 +93,7 @@ cacheElements();
 // --- LeaderLine safe init (prevents one bad endpoint from killing the whole script) ---
 function __noopLine() { return {position:function(){}, show:function(){}, hide:function(){}, remove:function(){}, setOptions:function(){} }; }
 
-var line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,line11,line12,line13,line14,line15,line16,line17,line18,line19,line20,line21,line22,line23,line24,line25,line26,line27; // keep these in global scope for anim-event.min.js etc
+var line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,line11,line12,line13,line14,line15,line16,line17,line18,line19,line20,line21,line22,line23,line24,line25,line26,line27,line28; // keep these in global scope for anim-event.min.js etc
 
 function __safeNewLine(name, createFn) {
   try {
@@ -262,7 +263,7 @@ function __llPatchPositionForSafari() {
 
 // --- Keep LeaderLine synced with DOM transforms/position changes (randP/randS/randN/hover/zoom) ---
 function __positionAllLines() {
-  for (var i = 1; i <= 27; i++) {
+  for (var i = 1; i <= 28; i++) {
     try {
       var ln = window['line' + i];
       if (ln && typeof ln.position === 'function') ln.position();
@@ -433,7 +434,7 @@ endPlug: 'square',
 middleLabel: __llCaption('line 14'),
 color: 'black'
 }); });
-line15 = __safeNewLine('line15', function(){ return new LeaderLine(element_p03, element_randomLoc, {
+line15 = __safeNewLine('line15', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_p03, {x: 0, y:12}), element_randomLoc, {                                                  
 dash:true,
 size:2,
 startPlug: 'square',
@@ -582,6 +583,19 @@ if (line26) line26.path = 'grid';
     }); });
 if (line27) line27.path = 'grid';
     line27.setOptions({startSocket: 'left', endSocket: 'right'});
+
+  
+  line28 = __safeNewLine('line28', function(){ return new LeaderLine(LeaderLine.pointAnchor(element_p03, {x: 0, y:5}), element_e07, {
+    dash: {animation: true},
+    size:2,
+    startPlug: 'square',
+    endPlug: 'hand',
+    /*dropShadow: {dx: 30, dy: 30, blur: 5},*/
+    middleLabel: __llCaption('line 28'),
+    color: 'black'
+    }); });
+if (line28) line28.path = 'magnet';
+    line28.setOptions({startSocket: 'left', endSocket: 'bottom'});
     
 
 // Safari: render line names as HTML labels (native LeaderLine captions are disabled on Safari)
@@ -619,6 +633,7 @@ if (__LL_IS_SAFARI) {
   __llRegisterSafariLabel(line25, 'line 25');
   __llRegisterSafariLabel(line26, 'line 26');
   __llRegisterSafariLabel(line27, 'line 27');
+  __llRegisterSafariLabel(line28, 'line 28');
 
   // initial positioning (after layout)
   setTimeout(__llUpdateSafariLabels, 0);
@@ -634,10 +649,10 @@ window.addEventListener('load', function () { setTimeout(__initLeaderLines, 50);
 // Consolidate many repetitive hover listeners using a data-driven approach
 function safePosition(line) { try { line && line.position && line.position(); } catch (e) {} }
 
-function addHoverHandlers(id, lines) {
+function addHoverHandlers(id, getLines) {
   const el = document.getElementById(id);
   if (!el) return;
-  const fn = AnimEvent && AnimEvent.add ? AnimEvent.add(function () { lines.forEach(safePosition); }) : function () { lines.forEach(safePosition); };
+  const fn = AnimEvent && AnimEvent.add ? AnimEvent.add(function () { getLines().forEach(safePosition); }) : function () { getLines().forEach(safePosition); };
   el.addEventListener('mouseover', fn, false);
   el.addEventListener('mouseout', fn, false);
 }
@@ -645,7 +660,7 @@ function addHoverHandlers(id, lines) {
 // mapping of element id => lines to reposition on hover
 const hoverBindings = {
   'p-05': [line7, line13],
-  'p-03': [line15, line7, line6],
+  get 'p-03'() { return [line15, line7, line6, line28]; },
   'p-06': [line8],
   'p-07': [line13, line14],
   'p-08': [line18, line14],
@@ -658,11 +673,12 @@ const hoverBindings = {
   'e-04': [line20],
   'e-05': [line11, line12],
   'e-06': [line26, line27],
+  get 'e-07'() { return [line28]; },
   'contact': [line12],
   'press': [line16]
 };
 
-Object.keys(hoverBindings).forEach(id => addHoverHandlers(id, hoverBindings[id] || []));
+Object.keys(hoverBindings).forEach(id => addHoverHandlers(id, () => hoverBindings[id] || []));
 
 
 /* P 03 */
@@ -914,6 +930,16 @@ line27.position();
 }), false);
 
 
+/* E 07 */
+var listen_e7 = document.getElementById('e-07');
+
+listen_e7.addEventListener('mouseover', AnimEvent.add(function() {
+line28.position();
+}), false);
+listen_e7.addEventListener('mouseout', AnimEvent.add(function() {
+line28.position();
+}), false);
+
 
 
 
@@ -950,10 +976,11 @@ line16.position();
     { el: () => element_e04, lines: [line20] },
     { el: () => element_e05, lines: [line11, line12] },
     { el: () => element_e06, lines: [line26, line27] },
+    { el: () => element_e07, get lines() { return [line28]; } },
 
     { el: () => element_p01, lines: [line2, line3, line4] },
     { el: () => element_p02, lines: [line4, line6] },
-    { el: () => element_p03, lines: [line15, line6, line7] },
+    { el: () => element_p03, get lines() { return [line15, line6, line7, line28]; } },
     { el: () => element_p04, lines: [line1, line2, line8] },
     { el: () => element_p05, lines: [line7, line13] },
     { el: () => element_p06, lines: [line8] },
@@ -1005,6 +1032,8 @@ let posY_e04 = 100;
 
 let posX_e05 = 100;
 let posY_e05 = 100;
+let posX_e07 = 100;
+let posY_e07 = 100;
 function startNoiseMovement() {
       if (noiseInterval) return;
 
@@ -1043,6 +1072,13 @@ function startNoiseMovement() {
       const rect_e06 = element_e06.getBoundingClientRect();
       posX_e06 = rect_e06.left;
       posY_e06 = rect_e06.top;
+
+      //E07
+      if (element_e07) {
+        const rect_e07 = element_e07.getBoundingClientRect();
+        posX_e07 = rect_e07.left;
+        posY_e07 = rect_e07.top;
+      }
 
       //P01
       // Get current position of the button
@@ -1172,6 +1208,17 @@ function startNoiseMovement() {
         line26.position();
         line27.position();
 
+        //e07
+        if (element_e07) {
+          const dx_e07 = (Math.random() - 0.5) * 50;
+          const dy_e07 = (Math.random() - 0.5) * 50;
+          posX_e07 = Math.max(0, Math.min(window.innerWidth - element_e07.offsetWidth, posX_e07 + dx_e07));
+          posY_e07 = Math.max(0, Math.min(window.innerHeight - element_e07.offsetHeight, posY_e07 + dy_e07));
+          element_e07.style.left = `${posX_e07}px`;
+          element_e07.style.top = `${posY_e07}px`;
+          safePosition(line28);
+        }
+
         //p01
         const dx_p01 = (Math.random() - 0.5) * 50;
         const dy_p01 = (Math.random() - 0.5) * 50;
@@ -1206,6 +1253,7 @@ function startNoiseMovement() {
         line15.position();
         line6.position();
         line7.position();
+        safePosition(line28);
 
         //p04
         const dx_p04 = (Math.random() - 0.5) * 50;
@@ -1309,6 +1357,7 @@ function startNoiseMovement() {
 (function bindRandomScale() {
   // Consolidated replacement for many repeated $(document).ready + #randomise click handlers.
   const scaleItems = [
+    { selector: "#e-07", min: 0.5, max: 10, nx: 5, ny: 5, get lines() { return [line28]; } },
     { selector: "#e-06", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line26, line27] },
     { selector: "#e-05", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line11, line12] },
     { selector: "#e-04", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line20] },
@@ -1318,7 +1367,7 @@ function startNoiseMovement() {
 
     { selector: "#p-01", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line3, line2, line4] },
     { selector: "#p-02", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line6, line4] },
-    { selector: "#p-03", min: 0.5, max: 10, nx: 5, ny: 5, lines: [line15, line6, line7] },
+    { selector: "#p-03", min: 0.5, max: 10, nx: 5, ny: 5, get lines() { return [line15, line6, line7, line28]; } },
     { selector: "#p-04", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line1, line2, line8] },
     { selector: "#p-05", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line7, line13] },
     { selector: "#p-06", min: 0.5, max: 5,  nx: 5, ny: 5, lines: [line8] },
@@ -1350,3 +1399,99 @@ function startNoiseMovement() {
 
 // RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END RANDOM BUTTON SCALE END
  
+const p03Button = document.getElementById('p-03');
+
+function updateP03Anchors(hovered) {
+  if (!line15 || !line28) return;
+
+  line15.setOptions({
+    start: LeaderLine.pointAnchor(p03Button, {
+      x: 0,
+      y: hovered ? '80%' : 12
+    }),
+    startSocket: 'left'
+  });
+
+  line28.setOptions({
+    start: LeaderLine.pointAnchor(p03Button, {
+      x: 0,
+      y: hovered ? '70%' : 5
+    }),
+    startSocket: 'left'
+  });
+
+  line15.position();
+  line28.position();
+}
+
+p03Button.addEventListener('mouseenter', () => {
+  updateP03Anchors(true);
+});
+
+p03Button.addEventListener('mouseleave', () => {
+  updateP03Anchors(false);
+});
+
+
+
+const e07Button = document.getElementById('e-07');
+
+e07Button.addEventListener('mouseenter', () => {
+  if (!line28) return;
+
+  line28.setOptions({
+    end: LeaderLine.pointAnchor(e07Button, {
+      x: '40%',
+      y: '100%'
+    }),
+    endSocket: 'bottom'
+  });
+
+  line28.position();
+});
+
+e07Button.addEventListener('mouseleave', () => {
+  if (!line28) return;
+
+  line28.setOptions({
+    end: e07Button,
+    endSocket: 'bottom'
+  });
+
+  line28.position();
+});
+
+
+document.querySelectorAll('.e07_hover span').forEach((z) => {
+  function randomizeWeight() {
+    const lightWeight = z.matches(':nth-child(5)') ? '300' : '400';
+    z.style.fontWeight = Math.random() < 0.5 ? lightWeight : '700';
+  }
+
+  randomizeWeight();
+
+  z.addEventListener('animationstart', randomizeWeight);
+  z.addEventListener('animationiteration', randomizeWeight);
+});
+
+
+function setupRandomZWeights() {
+  document.querySelectorAll('.e07_hover span').forEach((z) => {
+    function randomizeWeight() {
+      const regularWeight = z.matches(':nth-child(5)') ? '300' : '400';
+
+      z.style.fontWeight =
+        Math.random() < 0.5 ? regularWeight : '700';
+    }
+
+    randomizeWeight();
+    z.addEventListener('animationstart', randomizeWeight);
+    z.addEventListener('animationiteration', randomizeWeight);
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupRandomZWeights);
+} else {
+  setupRandomZWeights();
+}
